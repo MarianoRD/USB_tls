@@ -21,10 +21,8 @@ void informacionArchivos(Directorio *directorio, Cola *colaDir) {
     printf("No se pudo leer/ejecutar en: %s\n", directorio->rutaAbs);
     return;
   };
-
   // Abre el directorio
   directorio->dir = opendir(directorio->rutaAbs);
-
   // Cuenta solamente los archivos
   while ((fd = readdir(directorio->dir)) != NULL) {
     // Concateno la ruta absoluta
@@ -53,7 +51,6 @@ void informacionArchivos(Directorio *directorio, Cola *colaDir) {
       directorio->bytes = directorio->bytes + info.st_size;
     };
   }
-
   // Cierra el directorio
   closedir(directorio->dir);
 }
@@ -67,12 +64,10 @@ void creaStr(Directorio *directorio, char *str){
   char archivos[ARCHIVOS_MAX];
   char bytes[BYTES_MAX];
   char hilo[BYTES_MAX];
-
-  // Pasa de int a str
+  // Convierte los datos en str
   sprintf(archivos, "%d", directorio->cantArchivos);
   sprintf(bytes, "%u", directorio->bytes);
   sprintf(hilo, "%lu", directorio->hilo);
-
   // Creo el str
   strcpy(str, "");
   strcat(str, hilo);
@@ -131,7 +126,7 @@ void *hilosTrabajando(void *colasVoid) {
   multiCola *colas = (multiCola *) colasVoid;
 
   // Ciclo de trabajo mientras la cola de directorios no esté vacía
-  while(colas->directorios.cantNodos > 0) {
+  while(colas->directorios.cantNodos != 0) {
     // Inicializa las variables
       Directorio directorioActual;
       String *strActual = (String *) malloc(sizeof(String));
@@ -143,7 +138,6 @@ void *hilosTrabajando(void *colasVoid) {
       popCola(&(colas->directorios), &(directorioActual.rutaAbs));
       pthread_mutex_unlock(&(colas->directorios.mutex));
     // Analiza el directorio
-      printf("Trabajando con: %s\n", directorioActual.rutaAbs);
       informacionArchivos(&directorioActual, &(colas->directorios));
     // Agrega la información del hilo trabajador
       directorioActual.hilo = pthread_self();
@@ -154,10 +148,8 @@ void *hilosTrabajando(void *colasVoid) {
       pushCola(&(colas->strings), strActual);
       pthread_mutex_unlock(&(colas->strings.mutex));
   };
-
   // Finaliza el hilo (la cola está vacía)
     pthread_exit(NULL);
-  // Termina la función
     return 0;
 };
 

@@ -6,15 +6,6 @@
 #include <pthread.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include <signal.h> // No necesario
-#include <sys/types.h> // No necesario
-//#include <sys/wait.h> // No necesario
-//#include <pwd.h> // No necesario
-//#include <grp.h> // No necesario
-//#include <time.h> // No necesario
-//#include <langinfo.h> // No necesario
-//#include <elf.h> // No necesario
-//#include <libgen.h> // No necesario
 
 // Macros
 #define PATH_MAX 4096    // Cantidad de caracteres (max) de una ruta absoluta.

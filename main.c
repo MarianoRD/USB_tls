@@ -12,10 +12,6 @@ Directorio raiz;
 boolean boolDirInicial = false;
 multiCola colas;
 
-// Mutex <-----------------------------------------------------------------------
-// 1-. Cola de directorios
-// 2-. Cola de strings
-
 // Main
 int main(int argc, char* argv[]) {
 
