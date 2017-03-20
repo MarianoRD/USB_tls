@@ -7,6 +7,7 @@ char salida[NAME_MAX];
 int n = 1;
 char dirInicial[PATH_MAX];
 char rutaSalida[PATH_MAX];
+String strRaiz;
 Directorio raiz;
 boolean boolDirInicial = false;
 multiCola colas;
@@ -67,13 +68,20 @@ int main(int argc, char* argv[]) {
     strcpy(raiz.rutaAbs, dirInicial);
     informacionArchivos(&raiz, &(colas.directorios));
 
+  // Agrega el directorio raiz a la cola
+    creaStr(&raiz, strRaiz);
+    pushCola(&(colas.strings), &strRaiz);
+
   // Crea los hilos
     crearHilos(n, arregloHilos, &colas);
 
   // Espera a que los hilos finalicen <------------------------------------------
+    for (int i = 0; i < n; i++){
+        pthread_join(arregloHilos[i], NULL);
+    }
 
   // Imprime toda la información recolectada
-    crearReporte(rutaSalida, &(colas.strings), dirInicial, salida);
+    crearReporte(rutaSalida, &(colas.strings), salida);
 
   // Finaliza el programa
     printf("\nPrograma terminó con éxito\n");

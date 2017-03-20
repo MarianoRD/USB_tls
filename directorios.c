@@ -1,5 +1,6 @@
 // Librerias
 #include "directorios.h"
+#include <errno.h>
 
 /*----------------------------------------------------------------------------*/
 /*                                Funciones                                   */
@@ -26,7 +27,16 @@ void informacionArchivos(Directorio *directorio, Cola *colaDir) {
 
   // Cuenta solamente los archivos
   while ((fd = readdir(directorio->dir)) != NULL) {
-    if(stat(fd->d_name, &info) == -1) {
+    // Concateno la ruta absoluta
+      strcpy(str, "");
+      strcat(str, directorio->rutaAbs);
+      strcat(str, "/");
+      strcat(str, fd->d_name);
+    // Saco el stat
+    if(stat(str, &info) == -1) {
+      // Errores
+      printf("ERROR: %s\n", strerror(errno));
+      // Fin errores
       printf("Error stat(), informacionArchivos(), directorios.c\n");
     };
     // No cuenta los archivos ocultos
@@ -34,12 +44,6 @@ void informacionArchivos(Directorio *directorio, Cola *colaDir) {
       continue;
     }
     if (S_ISDIR(info.st_mode)) {
-      // Concateno la ruta absoluta
-      strcpy(str, "");
-      strcat(str, directorio->rutaAbs);
-      strcat(str, "/");
-      strcat(str, fd->d_name);
-      printf("sub-directorios: %s\n", str);
       // Agrego el elemento a la cola
       pthread_mutex_lock(&colaDir->mutex);
       pushCola(colaDir, &str);
@@ -47,7 +51,7 @@ void informacionArchivos(Directorio *directorio, Cola *colaDir) {
     } else {
       (directorio->cantArchivos)++;
       directorio->bytes = directorio->bytes + info.st_size;
-    }
+    };
   }
 
   // Cierra el directorio
@@ -66,7 +70,7 @@ void creaStr(Directorio *directorio, char *str){
 
   // Pasa de int a str
   sprintf(archivos, "%d", directorio->cantArchivos);
-  sprintf(bytes, "%d", directorio->bytes);
+  sprintf(bytes, "%u", directorio->bytes);
   sprintf(hilo, "%lu", directorio->hilo);
 
   // Creo el str
@@ -86,9 +90,8 @@ void creaStr(Directorio *directorio, char *str){
 /*
   Crea el reporte del programa
 */
-void crearReporte(char *rutaSalida, Cola *cola, char *nombreDirectorio, char *nombreArchivoSalida) {
+void crearReporte(char *rutaSalida, Cola *cola, char *nombreArchivoSalida) {
   // Inicializa las variables
-  char nombreArchivo[NAME_MAX];
   String str;
   FILE *archivo;
   // Guarda la ruta inicial de ejecución
@@ -96,19 +99,14 @@ void crearReporte(char *rutaSalida, Cola *cola, char *nombreDirectorio, char *no
   getcwd(rutaInicial, PATH_MAX);
   // Cambia a la carpeta de salida
   chdir(rutaSalida);
-  // Crea el nombre del archivo
-  strcpy(nombreArchivo, "");
-  strcat(nombreArchivo, nombreArchivoSalida);
-  strcat(nombreArchivo, "-");
-  strcat(nombreArchivo, nombreDirectorio);
   // Verifica si la salida es por STD_OUT o a un archivo
   if (strcmp(nombreArchivoSalida, "") == 0) {
     archivo = stdout;
   } else {
     // Abre el archivo
-    archivo = fopen(nombreArchivo, "w");
+    archivo = fopen(nombreArchivoSalida, "w");
   };
-  // Escribe el archivo
+  // Escribe el archiv
   while(cola->cantNodos > 0) {
     popCola(cola, &str);
     fprintf(archivo, "%s", str);
@@ -133,15 +131,19 @@ void *hilosTrabajando(void *colasVoid) {
   multiCola *colas = (multiCola *) colasVoid;
 
   // Ciclo de trabajo mientras la cola de directorios no esté vacía
-  while(!colaVacia(&(colas->directorios))) {
+  while(colas->directorios.cantNodos > 0) {
     // Inicializa las variables
       Directorio directorioActual;
       String *strActual = (String *) malloc(sizeof(String));
     // Busca el directorio en la cola correspondiente
       pthread_mutex_lock(&(colas->directorios.mutex));
+      if(colas->directorios.cantNodos == 0) {
+        break;
+      };
       popCola(&(colas->directorios), &(directorioActual.rutaAbs));
       pthread_mutex_unlock(&(colas->directorios.mutex));
     // Analiza el directorio
+      printf("Trabajando con: %s\n", directorioActual.rutaAbs);
       informacionArchivos(&directorioActual, &(colas->directorios));
     // Agrega la información del hilo trabajador
       directorioActual.hilo = pthread_self();
@@ -150,13 +152,13 @@ void *hilosTrabajando(void *colasVoid) {
     // Agrega el str a la cola correspondiente
       pthread_mutex_lock(&(colas->strings.mutex));
       pushCola(&(colas->strings), strActual);
-      pthread_mutex_lock(&(colas->strings.mutex));
+      pthread_mutex_unlock(&(colas->strings.mutex));
   };
 
   // Finaliza el hilo (la cola está vacía)
-
+    pthread_exit(NULL);
   // Termina la función
-  return 0;
+    return 0;
 };
 
 /*
@@ -166,6 +168,7 @@ void crearHilos(int n, pthread_t *arregloHilos, multiCola *colas) {
   int i;
   for (i = 0; i < n; i++) {
     pthread_create (&(arregloHilos[i]),NULL, hilosTrabajando, (multiCola *)colas);
+    printf("Creado el hilo: %lu\n", arregloHilos[i]);
   }
   return;
 };

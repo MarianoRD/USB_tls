@@ -68,8 +68,8 @@ void popCola(Cola *cola, String *str) {
 */
 boolean colaVacia(Cola *cola) {
   if (cola->cantNodos == 0) {
-    return true;
+    return 1;
   } else {
-    return false;
+    return 0;
   };
 }

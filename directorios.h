@@ -17,5 +17,6 @@ typedef struct
 // Funciones
 void informacionArchivos(Directorio *directorio, Cola *colaDir);
 void creaStr(Directorio *directorio, char *str);
-void crearReporte(char *rutaSalida, Cola *cola, char *nombreDirectorio, char *nombreArchivoSalida);
+void crearReporte(char *rutaSalida, Cola *cola, char *nombreArchivoSalida);
+void *hilosTrabajando(void *colasVoid);
 void crearHilos(int n, pthread_t *arregloHilos, multiCola *colas);

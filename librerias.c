@@ -43,7 +43,7 @@ void imprimeAyuda() {
 /*
     Verifica que se tengan los permisos de escritura en la ruta dada.
 */
-void verificarEscritura(char *str) {
+void verificarEscritura(char *str) { // NO FUNCIONA <-------------------------------------------
     if(access(str, W_OK) == 0) {
         return;
     } else {
