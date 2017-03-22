@@ -137,7 +137,6 @@ void *hilosTrabajando(void *colasVoid) {
         break;
       };
       popCola(&(colas->directorios), &(directorioActual.rutaAbs));
-      printf("Directorio: %s, \tCola: %d\n", directorioActual.rutaAbs, colas->directorios.cantNodos);
       pthread_mutex_unlock(&(colas->directorios.mutex));
     // Analiza el directorio
       informacionArchivos(&directorioActual, &(colas->directorios));

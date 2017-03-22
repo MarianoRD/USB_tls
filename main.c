@@ -51,11 +51,13 @@ int main(int argc, char* argv[]) {
 
   // Si hay una 'dirInicial' (-d) cambia el directorio
     if (boolDirInicial) {
-      getcwd(rutaSalida, PATH_MAX);
       chdir(dirInicial);
     } else {
       getcwd(dirInicial, PATH_MAX);
     };
+
+  // La salida es en 'tmp'
+    strcpy(rutaSalida, "/tmp");
 
   // Verifica que se pueda escribir el reporte en el directorio
     verificarEscritura(rutaSalida);
@@ -71,7 +73,7 @@ int main(int argc, char* argv[]) {
   // Crea los hilos
     crearHilos(n, arregloHilos, &colas);
 
-  // Espera a que los hilos finalicen <------------------------------------------
+  // Espera a que los hilos finalicen
     for (int i = 0; i < n; i++){
         pthread_join(arregloHilos[i], NULL);
     }
