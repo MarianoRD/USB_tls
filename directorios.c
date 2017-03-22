@@ -133,9 +133,11 @@ void *hilosTrabajando(void *colasVoid) {
     // Busca el directorio en la cola correspondiente
       pthread_mutex_lock(&(colas->directorios.mutex));
       if(colas->directorios.cantNodos == 0) {
+        pthread_mutex_unlock(&(colas->directorios.mutex));
         break;
       };
       popCola(&(colas->directorios), &(directorioActual.rutaAbs));
+      printf("Directorio: %s, \tCola: %d\n", directorioActual.rutaAbs, colas->directorios.cantNodos);
       pthread_mutex_unlock(&(colas->directorios.mutex));
     // Analiza el directorio
       informacionArchivos(&directorioActual, &(colas->directorios));

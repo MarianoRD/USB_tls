@@ -15,7 +15,6 @@
 #define BYTES_MAX 21
 
 // Typedefs
-typedef enum {false, true} boolean;
 typedef char String[STR_MAX];
 
 // Funciones
