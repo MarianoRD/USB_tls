@@ -19,7 +19,17 @@ void imprimeAyuda() {
     printf("\t\t ./tls [-h] | [-n i] [-d directorio] [ salida ] \n");
     // Sección Descripción
     printf("\nDESCRIPCIÓN:\n");
-    printf("\t\t PENE DURO DURO RICO\n");
+    printf("\t\t Muestra la cantidad de archivos y los bytes que estos ocupan"
+            "en un directorio, incluidos sus sub-directorios.\n");
+    // Seccion de Opciones
+    printf("\nOPCIONES:\n");
+    printf("\t -h \t Imprime la ayuda del programa. \n");
+    printf("\t -n \t Selecciona la cantidad de hilos, que van a ejecutar el "
+            "programa (por defecto n = 1).\n");
+    printf("\t -d \t Cambia el directorio de ejecución del programa por el "
+            "directorio pasado.\n");
+    printf("\t[ salida ] \t Cambia la salida a un archivo con el nombre pasado "
+            "que se guarda en '/tmp'.\n");
     // Sección Ejemplo
     printf("\nEJEMPLOS:\n");
     printf("\t\t./tls -h\n");
