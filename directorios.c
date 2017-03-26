@@ -161,7 +161,6 @@ void crearHilos(int n, pthread_t *arregloHilos, multiCola *colas) {
   int i;
   for (i = 0; i < n; i++) {
     pthread_create (&(arregloHilos[i]),NULL, hilosTrabajando, (multiCola *)colas);
-    printf("Creado el hilo: %lu\n", arregloHilos[i]);
   }
   return;
 };
